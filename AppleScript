@@ -1,0 +1,60 @@
+tell application id "com.omnigroup.OmniGraffle6"
+	tell front window
+		if the selection is {} then
+			display alert "Nothing Selected"
+			return
+		end if
+		
+		set selectedGraphics to the selection
+		set theShape to item 1 of selectedGraphics
+		set sideDialog to display dialog "Which side? N, E, S, W" default answer "N"
+		if the button returned of sideDialog is "Cancel" then
+			return
+		end if
+		
+		set side to the text returned of sideDialog
+		if side is not in {"N", "E", "S", "W"} then
+			display alert "Express side as N, E, S, or W"
+			return
+		end if
+		
+		set magnetDialog to display dialog "How many magnets?" default answer "" buttons {"Cancel", "Add them"} default button "Add them"
+		if the button returned of magnetDialog is "Cancel" then
+			return
+		end if
+		
+		try
+			set magnetNumber to the text returned of magnetDialog as integer
+		on error
+			display alert "Number must be an integer"
+			return
+		end try
+		
+		set theSpacing to 1 / (magnetNumber + 1)
+		set theMagnets to {}
+		
+		if side = "N" then
+			repeat with theInterval from 1 to magnetNumber
+				set theMagnets to theMagnets & {{-0.5 + theInterval * theSpacing, -0.5}}
+			end repeat
+			
+		else if side = "E" then
+			repeat with theInterval from 1 to magnetNumber
+				set theMagnets to theMagnets & {{0.5, -0.5 + theInterval * theSpacing}}
+			end repeat
+			
+		else if side = "S" then
+			repeat with theInterval from 1 to magnetNumber
+				set theMagnets to theMagnets & {{-0.5 + theInterval * theSpacing, 0.5}}
+			end repeat
+			
+		else if side = "W" then
+			
+			repeat with theInterval from 1 to magnetNumber
+				set theMagnets to theMagnets & {{-0.5, -0.5 + theInterval * theSpacing}}
+			end repeat
+		end if
+		
+		set the magnets of theShape to the magnets of theShape & theMagnets
+	end tell
+end tell
